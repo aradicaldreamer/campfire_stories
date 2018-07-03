@@ -1,0 +1,17 @@
+{
+  "name": "campfire_stories",
+  "version": "1.0.0",
+  "description": "Procedurally Generated Campfire Stories for Performance",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo index.js:bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Deline",
+  "license": "ISC",
+  "dependencies": {
+    "budo": "^11.3.2",
+    "improv": "^1.0.0",
+    "p5": "^0.6.1"
+  }
+}
