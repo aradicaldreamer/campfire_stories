@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "budo": "^11.3.2",
+    "chai": "^4.1.2",
     "improv": "^1.0.0",
     "jquery": "^3.3.1",
     "p5": "^0.6.1",

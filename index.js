@@ -1,8 +1,9 @@
 // Required Libraries
-var Tracery = require('tracery'); // import Tracery from 'tracery';
-
-var Improv = require('improv'); // import Improv from 'improv';
-var P5 = require('p5'); // import p5 from 'p5.js';
+var Jquery = require('jquery'); // adding jquery as needed by Tracery
+var tracery = require('tracery'); // import Tracery for tacery generative text tests;
+var should = require('chai').should(); // adding chai for the node tracery examples
+var Improv = require('improv'); // import Improv for Improv generative text examples;
+var P5 = require('p5'); // Adding p5.js libraries for Processing;
 require('p5/lib/addons/p5.sound');
 require('p5/lib/addons/p5.dom');
 
@@ -32,46 +33,46 @@ require('p5/lib/addons/p5.dom');
 //   }
 // };
 
-// var spec = require('./specs/example.js'); // this is an alternative for bringing this code into the main script
+var spec = require('./specs/example.js'); // this is an alternative for bringing this code into the main script
 
-// var improv = new Improv(spec, {
-//   filters: [Improv.filters.mismatchFilter()]
-// });
+var improv = new Improv(spec, {
+  filters: [Improv.filters.mismatchFilter()]
+});
 
-// var bob = { name: 'Bob' };
-// var alice = { name: 'Alice', tags: [['class', 'mammal']] };
-// var carol = { name: 'Carol', tags: [['class', 'bird']] };
+var bob = { name: 'Bob' };
+var alice = { name: 'Alice', tags: [['class', 'mammal']] };
+var carol = { name: 'Carol', tags: [['class', 'bird']] };
 
-// var lines = [
-//   improv.gen('root', bob),
-//   improv.gen('root', alice),
-//   improv.gen('root', carol)
-// ];
+var lines = [
+  improv.gen('root', bob),
+  improv.gen('root', alice),
+  improv.gen('root', carol)
+];
 
 // Tracery code
 
 // Processing Code
 
-function processingEnvironment(p) {
+function processingCode(p) {
     
     // console.log(p);
     // console.log(p.select);
     // console.log(p.getAudioContext);
     // console.log(lines.join('\n')); // testing to see if we have access to Improv Text in Processing
-    // var improvText = lines.join('\n'); // taking Improv text and saving as a variable separated by new lines
-  
+    var improvText = lines.join('\n'); // taking Improv text and saving as a variable separated by new lines
 
 
     p.setup = function () {
-      p.createCanvas(900, 900);
+      p.createCanvas(640, 480);
     }
   
     p.draw = function () {
       p.background(0);
       p.fill(255);
-      p.text(text,16,16);
+      p.textSize(32);
+      p.text(improvText,100,100,400,400);
     }
   }
   
-  new P5(processingEnvironment);
+  new P5(processingCode);
   
