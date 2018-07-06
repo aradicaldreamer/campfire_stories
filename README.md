@@ -1,4 +1,4 @@
-#CAMPFIRE STORIES
+# CAMPFIRE TALES
 Work in progress, full description to come later
 
 # Workflow
