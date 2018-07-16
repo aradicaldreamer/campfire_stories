@@ -1,6 +1,6 @@
 // Required Libraries
 var Jquery = require('jquery'); // adding jquery as needed by Tracery
-var tracery = require('tracery'); // import Tracery for tacery generative text tests;
+//var tracery = require('tracery'); // import Tracery for tacery generative text tests;
 var should = require('chai').should(); // adding chai for the node tracery examples
 var Improv = require('improv'); // import Improv for Improv generative text examples;
 var P5 = require('p5'); // Adding p5.js libraries for Processing;
@@ -33,23 +33,44 @@ require('p5/lib/addons/p5.dom');
 //   }
 // };
 
-var spec = require('./specs/example.js'); // this is an alternative for bringing this code into the main script
+// var spec = require('./specs/example.js'); // this is an alternative for bringing this code into the main script
 
-var improv = new Improv(spec, {
-  filters: [Improv.filters.mismatchFilter()]
-});
+// var improv = new Improv(spec, {
+//   filters: [Improv.filters.mismatchFilter()]
+// });
 
-var bob = { name: 'Bob' };
-var alice = { name: 'Alice', tags: [['class', 'mammal']] };
-var carol = { name: 'Carol', tags: [['class', 'bird']] };
+// var bob = { name: 'Bob' };
+// var alice = { name: 'Alice', tags: [['class', 'mammal']] };
+// var carol = { name: 'Carol', tags: [['class', 'bird']] };
 
-var lines = [
-  improv.gen('root', bob),
-  improv.gen('root', alice),
-  improv.gen('root', carol)
-];
+// var lines = [
+//   improv.gen('root', bob),
+//   improv.gen('root', alice),
+//   improv.gen('root', carol)
+// ];
 
 // Tracery code
+
+// var story = {
+//   "start": "#[hero:#character#]story#",
+//   "character": ["dragon", "unicorn", "rainbow"],
+//   "story": "A #adj# #hero# fights the #adj# monster. Go #hero# go!",
+//   "adj": ["dark", "sleepy", "quiet"]
+// }
+
+// var grammar = tracery.createGrammar(story);
+
+var tracery = require('tracery');
+
+var grammar = tracery.createGrammar({
+  'animal': ['panda','fox','capybara','iguana'],
+  'emotion': ['sad','happy','angry','jealous'],
+  'origin':['I am #emotion.a# #animal#.'],
+});
+
+grammar.addModifiers(tracery.baseEngModifiers); 
+
+console.log(grammar.flatten('#origin#'));
 
 // Processing Code
 
@@ -59,8 +80,8 @@ function processingCode(p) {
     // console.log(p.select);
     // console.log(p.getAudioContext);
     // console.log(lines.join('\n')); // testing to see if we have access to Improv Text in Processing
-    var improvText = lines.join('\n'); // taking Improv text and saving as a variable separated by new lines
-
+    // var improvText = lines.join('\n'); // taking Improv text and saving as a variable separated by new lines
+    // var traceryText = grammar.flatten("#start#");
 
     p.setup = function () {
       p.createCanvas(640, 480);
@@ -70,7 +91,8 @@ function processingCode(p) {
       p.background(0);
       p.fill(255);
       p.textSize(32);
-      p.text(improvText,100,100,400,400);
+      // p.text(improvText,100,100,400,400);
+      // p.text(traceryText,100,100,400,400);
     }
   }
   
