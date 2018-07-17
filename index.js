@@ -1,9 +1,10 @@
 // Required Libraries
 var Jquery = require('jquery'); // adding jquery as needed by Tracery
 var tracery = require('tracery-grammar'); // import Tracery for tacery generative text tests;
-var should = require('chai').should(); // adding chai for the node tracery examples
+// var should = require('chai').should(); // adding chai for the node tracery examples
 var Improv = require('improv'); // import Improv for Improv generative text examples;
 var P5 = require('p5'); // Adding p5.js libraries for Processing;
+var rita = require('rita');
 require('p5/lib/addons/p5.sound');
 require('p5/lib/addons/p5.dom');
 
@@ -49,6 +50,10 @@ require('p5/lib/addons/p5.dom');
 //   improv.gen('root', carol)
 // ];
 
+// Rita Code
+var example = "This is a test";
+var rs = rita.RiString(example);
+
 // Tracery code
 
 var story = {
@@ -73,6 +78,7 @@ function processingCode(p) {
     // console.log(lines.join('\n')); // testing to see if we have access to Improv Text in Processing
     // var improvText = lines.join('\n'); // taking Improv text and saving as a variable separated by new lines
     var traceryText = grammar.flatten("#start#");
+
 
     p.setup = function () {
       p.createCanvas(640, 480);
