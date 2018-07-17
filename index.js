@@ -63,6 +63,8 @@ var grammar = tracery.createGrammar(story);
 
 // Processing Code
 
+var input;
+
 function processingCode(p) {
     
     // console.log(p);
@@ -74,6 +76,10 @@ function processingCode(p) {
 
     p.setup = function () {
       p.createCanvas(640, 480);
+      input = p.createInput();
+      input.position(50, p.height - 100);
+      input.size(p.width - 100);
+      input.style("background-color", "#ff0000");
     }
   
     p.draw = function () {
