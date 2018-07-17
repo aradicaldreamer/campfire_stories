@@ -54,7 +54,7 @@ require('p5/lib/addons/p5.dom');
 var story = {
   "start": "#[hero:#character#]story#",
   "character": ["dragon", "unicorn", "rainbow"],
-  "story": "A #adj# #hero# fights the #adj# monster. Go #hero# go!",
+  "story": "A #adj# #hero# fights the #adj# monster. Go #hero# go! Hope you liked the story, PLAYER!",
   "adj": ["dark", "sleepy", "quiet"]
 }
 
@@ -76,10 +76,7 @@ function processingCode(p) {
 
     p.setup = function () {
       p.createCanvas(640, 480);
-      input = p.createInput();
-      input.position(50, p.height - 100);
-      input.size(p.width - 100);
-      input.style("background-color", "#ff0000");
+      p.userInput();
     }
   
     p.draw = function () {
@@ -88,6 +85,17 @@ function processingCode(p) {
       p.textSize(32);
       // p.text(improvText,100,100,400,400);
       p.text(traceryText,100,100,400,400);
+    }
+
+    // This function is intended to collect user input at various points during the story
+    p.userInput = function () {
+      input = p.createInput();
+      input.position(50, p.height - 100);
+      input.size(p.width - 100, 50);
+      input.style("background-color", "#000000");
+      input.style("color", "white");
+      input.style("border-color", "white");
+      input.style("font-size", "4em");
     }
   }
   
