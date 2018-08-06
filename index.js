@@ -72,9 +72,10 @@ function loadData () {
 // Tracery code
 
 var story = loadData() || {
-  "start": "#[hero:#character#]story#",
+  "start": "#[hero:#character#][villain:#monster#]story#",
   "character": ["dragon", "unicorn", "rainbow"],
-  "story": "A #adj# #hero# fights the #adj# monster. Go #hero# go!",
+  "monster": ["tiger"],
+  "story": "A #adj# #hero# fights the #adj# #villain#. Go #hero# go!",
   "adj": ["dark", "sleepy", "quiet"]
 }
 
@@ -94,7 +95,7 @@ function generateStory () {
 var input;
 
 function processingCode(p) {
-    
+
   // story.character[0] = 'cat'
   // story.character.push('cat')
     // console.log(p);
@@ -104,7 +105,7 @@ function processingCode(p) {
     // var improvText = lines.join('\n'); // taking Improv text and saving as a variable separated by new lines
     // var traceryText;
     // var rs;
-    
+
     // var traceryText = grammar.flatten("#start#");
     // var rs = RiString(traceryText);
 
@@ -114,7 +115,7 @@ function processingCode(p) {
       p.createCanvas(640, 480);
       userInput();
     }
-  
+
     p.draw = function () {
       p.background(0);
       p.fill(255);
@@ -132,7 +133,7 @@ function processingCode(p) {
       input.style("color", "white");
       input.style("border-color", "white");
       input.style("font-size", "4em");
-      input.changed(newCharacter); 
+      input.changed(newCharacter);
     }
 
     function newCharacter () {
@@ -140,7 +141,7 @@ function processingCode(p) {
       var val = input.value();
       val = val.replace(/[#\[\]]/g, '');
 
-      story.character.push(val);
+      story.monster.push(val);
       window.localStorage.setItem("story", JSON.stringify(story));
       input.value('');
       rs = generateStory();
@@ -150,6 +151,5 @@ function processingCode(p) {
 
 
   }
-  
+
   new P5(processingCode);
-  
