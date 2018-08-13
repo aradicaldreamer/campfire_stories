@@ -11,23 +11,7 @@ require('p5/lib/addons/p5.dom.js');
 
 // Tracery code
 
-// var initialVariables = {
-//   start: "#[hero:#names#]story#",
-//   names: ["Matthew", "Alex", "Ben", "Doruk", "Ece", "Hugh", "Jade", "Julia", "Phoenix", "Raymond", "Tommy"],
-//   story: "This is a story about #hero# and when they met someone new. Who did they meet?",
-//   sceneTwo: "#hero# met #friendName# on a bus. Where did they go?",
-//   sceneThree: "#hero# and #friendName# went to #location#. They had so much fun!"
-// }
-
 var initialVariables = require('./grammars/story.js');
-
-// function generateStory () {
-
-//   grammar = tracery.createGrammar(initialVariables);
-//   var traceryText = grammar.flatten("#start#");
-//   var rs = RiString(traceryText);
-//   return rs;
-// }
 
 // Processing Code
 
@@ -35,30 +19,29 @@ var input;
 
 function processingCode(p) {
 
-  // story.character[0] = 'cat'
-  // story.character.push('cat')
-    // console.log(p);
-    // console.log(p.select);
-    // console.log(p.getAudioContext);
-    // console.log(lines.join('\n')); // testing to see if we have access to Improv Text in Processing
-    // var improvText = lines.join('\n'); // taking Improv text and saving as a variable separated by new lines
-    // var traceryText;
-    // var rs;
-
-    // var traceryText = grammar.flatten("#start#");
-    // var rs = RiString(traceryText);
-
     grammar = tracery.createGrammar(initialVariables);
     var hero = grammar.flatten("#names#");
     grammar.pushRules("hero", [hero]);
     var traceryText = grammar.flatten("#story#");
-    var rs = traceryText;
+    var rs = traceryText + "Who did they meet?";
+    var wholeStory = traceryText;
+    var bg;
+    var r;
+    var message = "Campfire Tales - Click to Play";
+    var scene = "titleScreen";
 
-    var scene = 1;
 
+    p.preload = function () {
+      f = p.loadFont("assets/Arial.ttf");
+    }
+    
     p.setup = function () {
+      bg = p.loadImage("assets/bonfire-night-forest-vector-large.png");
       p.createCanvas(p.windowWidth, p.windowHeight);
-        userInput();
+      p.textFont(f);
+      p.textSize(60);
+      p.textAlign(p.CENTER);
+      p.smooth();
     }
 
     p.update = function () {
@@ -66,15 +49,54 @@ function processingCode(p) {
     }
 
     p.draw = function () {
-      p.background(0);
-      p.fill(255);
-      p.textSize(32);
-      p.textAlign(p.CENTER);
-      p.text(rs,0,0,p.windowWidth-50,p.windowHeight - 100);
+      if (scene === "titleScreen"){
+        drawTitle();
+      }
+      else if (scene === "final") {
+        p.background(bg);
+        p.fill(255);
+        p.textSize(32);
+        p.textAlign(p.CENTER);
+        p.text(wholeStory,0,0,p.windowWidth-50,p.windowHeight - 100);
+      }
+      else {
+        p.background(0);
+        p.fill(255);
+        p.textSize(32);
+        p.textAlign(p.CENTER);
+        p.text(rs,0,0,p.windowWidth-50,p.windowHeight - 100);
+      }
     }
 
     p.windowResized = function () {
-      resizeCanvas(p.windowWidth, p.windowHeight);
+      p.resizeCanvas(p.windowWidth, p.windowHeight);
+    }
+
+    p.mouseClicked = function () {
+      if (scene === "titleScreen") {
+        userInput();
+        scene = 1;
+      }
+    }
+
+    // This function should allow the user to save their entire story for sharing
+    function saveStoryButton () {
+      button = p.createButton("Save Story?");
+      button.position(p.width / 2 - 50, p.height / 2);
+      button.size(100, 100);
+      button.mousePressed(saveStory);
+    }
+
+    function saveStory () {
+      scene = "final";
+      button.hide();
+      clearCanvas();
+      p.background(bg);
+      p.fill(255);
+      p.textSize(32);
+      p.textAlign(p.CENTER);
+      p.text(wholeStory,0,0,p.windowWidth-50,p.windowHeight - 100);
+      p.saveCanvas("myCampfireStory", "png");
     }
 
     // This function is intended to collect user input at various points during the story
@@ -98,19 +120,66 @@ function processingCode(p) {
         grammar.pushRules("friendName", [val]);
         input.value('');
         rs = grammar.flatten("#sceneTwo#");
+        wholeStory = wholeStory + "\n" + rs;
+        rs = rs + " Where did they go?";
         scene = 2;
       } else if (scene === 2) {
         var val = input.value();
         val = val.replace(/[#\[\]]/g, '');
         grammar.pushRules("location", [val]);
         input.value('');
-        rs = grammar.flatten("#sceneThree#")
+        input.hide();
+        rs = grammar.flatten("#sceneThree#");
+        wholeStory = wholeStory + "\n" + rs;
+        saveStoryButton();
         scene = 3;
       }
 
     }
 
+    function clearCanvas () {
+      p.rect(0,0, p.windowWidth, p.windowHeight);
+    }
 
+    function drawTitle () {
+      p.background(bg);
+      r = p.windowHeight * .4;
+      // Start in the center and draw the circle
+      p.translate(p.width / 2, p.height / 2);
+      p.noFill();
+      p.noStroke();
+      p.ellipse(0, 0, r*2, r*2);
+      p.stroke(255);
+
+      // We must keep track of our position along the curve
+      var arclength = 0.0;
+
+      // For every box
+      for (var i = 0; i < message.length; i++)
+      {
+        // Instead of a constant width, we check the width of each character.
+        var currentChar = message.charAt(i);
+        var w = p.textWidth(currentChar);
+
+        // Each box is centered so we move half the width
+        arclength += w/2;
+        // Angle in radians is the arclength divided by the radius
+        // Starting on the left side of the circle by adding PI
+        var theta = p.PI + arclength / r;    
+
+        p.push();
+        // Polar to cartesian coordinate conversion
+        p.translate(r*p.cos(theta), r*p.sin(theta));
+        // Rotate the box
+        p.rotate(theta+p.PI/2); // rotation is offset by 90 degrees
+        // Display the character
+        p.fill(255);
+        p.text(currentChar,0,0);
+        p.pop();
+        // Move halfway again
+        arclength += w/2;
+      }
+    }
 
   }
 
