@@ -17,6 +17,8 @@ var initialVariables = require('./grammars/story.js');
 
 var input;
 
+
+
 function processingCode(p) {
 
     grammar = tracery.createGrammar(initialVariables);
@@ -30,13 +32,17 @@ function processingCode(p) {
     var message = "Campfire Tales - Click to Play";
     var scene = "titleScreen";
 
+    // code for making image display properly
+    var gap = p.windowHeight - p.windowWidth;
+
 
     p.preload = function () {
       f = p.loadFont("assets/Arial.ttf");
+      campfire = p.loadImage("assets/campfire_background.png");
+      campfire_title_landscape = p.loadImage("assets/campfire_title_screen.png");
     }
     
     p.setup = function () {
-      campfire = p.loadImage("assets/bonfire-night-forest-vector-large.png");
       p.createCanvas(p.windowWidth, p.windowHeight);
       p.textFont(f);
       p.textSize(60);
@@ -105,8 +111,12 @@ function processingCode(p) {
     // This function is intended to collect user input at various points during the story
     function userInput () {
       input = p.createInput();
-      input.position(50, p.height - 100);
-      input.size(p.width - 100, 50);
+      // input.position(50, p.height - 100);
+      input.size(p.windowWidth - 32);
+      input.style("position", "absolute");
+      input.style("bottom", "16px");
+      input.style("left", "16px");
+      // input.style("right", "16px");
       input.style("background-color", "#000000");
       input.style("color", "white");
       input.style("border-color", "white");
@@ -144,45 +154,66 @@ function processingCode(p) {
       p.rect(0,0, p.windowWidth, p.windowHeight);
     }
 
+    function drawImageToBottomOrFit (imageToDraw) {
+      var isLandscape = p.windowWidth > p.windowHeight
+      // if (isLandscape) {
+      //   var gap = (p.windowHeight - p.windowWidth) * 0.40
+      // } else {
+      //   var gap = p.windowHeight - p.windowWidth 
+      // }
+      var aspect = imageToDraw.height / imageToDraw.width
+      var width = p.windowWidth
+      var height = width * aspect
+      var gap = (p.windowHeight - height) * 0.5
+      // if (isLandscape) {
+        
+      // } else {
+      //   var gap = p.windowHeight - height 
+      // }
+      
+      p.image(imageToDraw, 0, gap, width, height);
+    }
+
     function drawTitle () {
       p.background(bg);
-      p.image(campfire,0,0,p.windowWidth, p.windowHeight);
-      r = p.windowHeight * .4;
-      // Start in the center and draw the circle
-      p.translate(p.width / 2, p.height / 2);
-      p.noFill();
-      p.noStroke();
-      p.ellipse(0, 0, r*2, r*2);
-      p.stroke(255);
+      // p.image(campfire,0,,p.windowWidth, p.windowWidth);
+      drawImageToBottomOrFit(campfire_title_landscape);
+      // r = p.windowHeight * .4;
+      // // Start in the center and draw the circle
+      // p.translate(p.width / 2, p.height / 2);
+      // p.noFill();
+      // p.noStroke();
+      // p.ellipse(0, 0, r*2, r*2);
+      // p.stroke(255);
 
-      // We must keep track of our position along the curve
-      var arclength = 0.0;
+      // // We must keep track of our position along the curve
+      // var arclength = 0.0;
 
-      // For every box
-      for (var i = 0; i < message.length; i++)
-      {
-        // Instead of a constant width, we check the width of each character.
-        var currentChar = message.charAt(i);
-        var w = p.textWidth(currentChar);
+      // // For every box
+      // for (var i = 0; i < message.length; i++)
+      // {
+      //   // Instead of a constant width, we check the width of each character.
+      //   var currentChar = message.charAt(i);
+      //   var w = p.textWidth(currentChar);
 
-        // Each box is centered so we move half the width
-        arclength += w/2;
-        // Angle in radians is the arclength divided by the radius
-        // Starting on the left side of the circle by adding PI
-        var theta = p.PI + arclength / r;    
+      //   // Each box is centered so we move half the width
+      //   arclength += w/2;
+      //   // Angle in radians is the arclength divided by the radius
+      //   // Starting on the left side of the circle by adding PI
+      //   var theta = p.PI + arclength / r;    
 
-        p.push();
-        // Polar to cartesian coordinate conversion
-        p.translate(r*p.cos(theta), r*p.sin(theta));
-        // Rotate the box
-        p.rotate(theta+p.PI/2); // rotation is offset by 90 degrees
-        // Display the character
-        p.fill(255);
-        p.text(currentChar,0,0);
-        p.pop();
-        // Move halfway again
-        arclength += w/2;
-      }
+      //   p.push();
+      //   // Polar to cartesian coordinate conversion
+      //   p.translate(r*p.cos(theta), r*p.sin(theta));
+      //   // Rotate the box
+      //   p.rotate(theta+p.PI/2); // rotation is offset by 90 degrees
+      //   // Display the character
+      //   p.fill(255);
+      //   p.text(currentChar,0,0);
+      //   p.pop();
+      //   // Move halfway again
+      //   arclength += w/2;
+      // }
     }
 
   }
