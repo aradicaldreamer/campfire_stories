@@ -86,12 +86,24 @@ function processingCode(p) {
       }
     }
 
+    p.touchEnded = function () {
+      if (scene === "titleScreen") {
+        userInput();
+        scene = 1;
+      }
+    }
+
     // This function should allow the user to save their entire story for sharing
     function saveStoryButton () {
       button = p.createButton("Save Story?");
-      button.position(p.width / 2 - 50, p.height / 2);
+      button.position(p.windowWidth / 2 - 50, p.windowHeight / 2);
+      // button.style("position", "absolute");
+      // button.style("bottom", "100px");
+      // button.style("left", "200px");
+      button.style("background-color", "#fff");
       button.size(100, 100);
       button.mousePressed(saveStory);
+      button.touchEnded(saveStory);
     }
 
     function saveStory () {
