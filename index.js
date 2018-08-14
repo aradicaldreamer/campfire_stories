@@ -23,9 +23,9 @@ function processingCode(p) {
     var hero = grammar.flatten("#names#");
     grammar.pushRules("hero", [hero]);
     var traceryText = grammar.flatten("#story#");
-    var rs = traceryText + "Who did they meet?";
+    var rs = traceryText + " Who did they meet?";
     var wholeStory = traceryText;
-    var bg;
+    var bg = "#676969";
     var r;
     var message = "Campfire Tales - Click to Play";
     var scene = "titleScreen";
@@ -36,7 +36,7 @@ function processingCode(p) {
     }
     
     p.setup = function () {
-      bg = p.loadImage("assets/bonfire-night-forest-vector-large.png");
+      campfire = p.loadImage("assets/bonfire-night-forest-vector-large.png");
       p.createCanvas(p.windowWidth, p.windowHeight);
       p.textFont(f);
       p.textSize(60);
@@ -54,6 +54,7 @@ function processingCode(p) {
       }
       else if (scene === "final") {
         p.background(bg);
+        p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
         p.fill(255);
         p.textSize(32);
         p.textAlign(p.CENTER);
@@ -91,7 +92,9 @@ function processingCode(p) {
       scene = "final";
       button.hide();
       clearCanvas();
+      p.resizeCanvas(p.windowWidth, p.windowHeight * 2);
       p.background(bg);
+      p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
       p.fill(255);
       p.textSize(32);
       p.textAlign(p.CENTER);
@@ -143,6 +146,7 @@ function processingCode(p) {
 
     function drawTitle () {
       p.background(bg);
+      p.image(campfire,0,0,p.windowWidth, p.windowHeight);
       r = p.windowHeight * .4;
       // Start in the center and draw the circle
       p.translate(p.width / 2, p.height / 2);
