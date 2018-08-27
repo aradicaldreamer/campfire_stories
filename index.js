@@ -7,6 +7,10 @@ require('p5/lib/addons/p5.sound.js');
 require('p5/lib/addons/p5.dom.js');
 
 
+// Required Local Libraries
+
+// Global Variables
+
 // Data Functions
 
 // Tracery code
@@ -14,10 +18,10 @@ require('p5/lib/addons/p5.dom.js');
 var initialVariables = require('./grammars/story.js');
 
 // Processing Code
-
-var input;
-
-
+// A note on Processing in nodeJS: I haven't found a way to naturally integrate processing into nodeJS
+// Currently, I'm instantiating a P5 construction and calling the code declared below. It's messy, but it works
+// This makes it much more difficult to actually write the code, and limits my ability to bring in functions from separate files
+// I'll do my best to organize functions by task to keep this as clean as possible until (and if) I find a better solution
 
 function processingCode(p) {
 
@@ -28,22 +32,21 @@ function processingCode(p) {
     var rs = traceryText + " Who did they meet?";
     var wholeStory = traceryText;
     var bg = "#676969";
-    var r;
-    var message = "Campfire Tales - Click to Play";
     var scene = "titleScreen";
+    var input;
 
     // code for making image display properly
-    var gap = p.windowHeight - p.windowWidth;
 
 
     p.preload = function () {
       f = p.loadFont("assets/Arial.ttf");
-      campfire = p.loadImage("assets/campfire_background.png");
+      campfire = p.loadImage("assets/campfire_HD.png");
       campfire_title_landscape = p.loadImage("assets/campfire_title_screen.png");
     }
     
     p.setup = function () {
-      p.createCanvas(p.windowWidth, p.windowHeight);
+      var canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+      canvas.parent("game");
       p.textFont(f);
       p.textSize(60);
       p.textAlign(p.CENTER);
@@ -55,12 +58,17 @@ function processingCode(p) {
     }
 
     p.draw = function () {
+      
       if (scene === "titleScreen"){
         drawTitle();
       }
       else if (scene === "final") {
         p.background(bg);
-        p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
+        // p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
+        p.push();
+          p.translate(0,p.windowHeight);
+          drawImageToBottomOrFit(campfire);
+        p.pop();
         p.fill(255);
         p.textSize(32);
         p.textAlign(p.CENTER);
@@ -74,6 +82,8 @@ function processingCode(p) {
         p.text(rs,0,0,p.windowWidth-50,p.windowHeight - 100);
       }
     }
+
+
 
     p.windowResized = function () {
       p.resizeCanvas(p.windowWidth, p.windowHeight);
@@ -112,12 +122,35 @@ function processingCode(p) {
       clearCanvas();
       p.resizeCanvas(p.windowWidth, p.windowHeight * 2);
       p.background(bg);
-      p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
+        // p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
+      p.push();
+        p.translate(0,p.windowHeight);
+        drawImageToBottomOrFit(campfire);
+      p.pop();
       p.fill(255);
       p.textSize(32);
       p.textAlign(p.CENTER);
       p.text(wholeStory,0,0,p.windowWidth-50,p.windowHeight - 100);
+      // p.background(bg);
+      // //p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
+
+      // p.fill(255);
+      // p.textSize(32);
+      // p.textAlign(p.CENTER);
+      // p.text(wholeStory,0,0,p.windowWidth-50,p.windowHeight - 100);
       p.saveCanvas("myCampfireStory", "png");
+      feedbackAlert();
+    }
+
+    // This function is used to collect user feedback
+    function feedbackAlert () {
+      var answer = confirm ("I hope you've enjoyed playing Campfire Tales! I'd love your feedback to make the game better. Please click OK to fill out the form or cancel to play again")
+      if (answer) {
+        window.location="https://goo.gl/forms/tgbSIIfrgRSOEBx23";
+      }
+      else {
+        location.reload();
+      }
     }
 
     // This function is intended to collect user input at various points during the story
@@ -166,6 +199,17 @@ function processingCode(p) {
       p.rect(0,0, p.windowWidth, p.windowHeight);
     }
 
+    var portraitBorder = function () {
+      if (p.windowWidth < p.windowHeight){
+        p.push();
+          p.translate(0,p.windowHeight * .65);
+          p.fill(60,62,63);
+          p.noStroke();
+          p.rect(0,0,p.windowWidth,p.windowHeight);
+        p.pop();
+      }
+    }
+
     function drawImageToBottomOrFit (imageToDraw) {
       var isLandscape = p.windowWidth > p.windowHeight
       // if (isLandscape) {
@@ -188,44 +232,8 @@ function processingCode(p) {
 
     function drawTitle () {
       p.background(bg);
-      // p.image(campfire,0,,p.windowWidth, p.windowWidth);
       drawImageToBottomOrFit(campfire_title_landscape);
-      // r = p.windowHeight * .4;
-      // // Start in the center and draw the circle
-      // p.translate(p.width / 2, p.height / 2);
-      // p.noFill();
-      // p.noStroke();
-      // p.ellipse(0, 0, r*2, r*2);
-      // p.stroke(255);
-
-      // // We must keep track of our position along the curve
-      // var arclength = 0.0;
-
-      // // For every box
-      // for (var i = 0; i < message.length; i++)
-      // {
-      //   // Instead of a constant width, we check the width of each character.
-      //   var currentChar = message.charAt(i);
-      //   var w = p.textWidth(currentChar);
-
-      //   // Each box is centered so we move half the width
-      //   arclength += w/2;
-      //   // Angle in radians is the arclength divided by the radius
-      //   // Starting on the left side of the circle by adding PI
-      //   var theta = p.PI + arclength / r;    
-
-      //   p.push();
-      //   // Polar to cartesian coordinate conversion
-      //   p.translate(r*p.cos(theta), r*p.sin(theta));
-      //   // Rotate the box
-      //   p.rotate(theta+p.PI/2); // rotation is offset by 90 degrees
-      //   // Display the character
-      //   p.fill(255);
-      //   p.text(currentChar,0,0);
-      //   p.pop();
-      //   // Move halfway again
-      //   arclength += w/2;
-      // }
+      portraitBorder();
     }
 
   }
