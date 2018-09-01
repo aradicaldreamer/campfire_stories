@@ -3,8 +3,8 @@ var Jquery = require('jquery'); // adding jquery as needed by Tracery
 var tracery = require('tracery-grammar'); // import Tracery for tacery generative text tests;
 var P5 = require('p5'); // Adding p5.js libraries for Processing;
 require('rita');
-require('p5/lib/addons/p5.sound.js');
-require('p5/lib/addons/p5.dom.js');
+require("p5/lib/addons/p5.sound");
+require("p5/lib/addons/p5.dom");
 
 /*-------------------------------------------------------------------------------------------------------*/
 
@@ -52,8 +52,12 @@ function processingCode(p) {
     var scene = "titleScreen"; // sets the initial state to the title screen
     var input; // used to store user text input
     p.pixelDensity(1); // fix for scaling issues with buffer usage on Retina Displays
+    
+    // var mic; // variable for configuring microphone input
+    var counter; // for counting how long sustained microphone input has been received
+
     // Parameters for Fire Effect
-    // Credit to Julien (need to find proper name and add full credits later)
+    // Credit to Julien G. (need to find proper name and add full credits later)
     // https://kampeki-factory.blogspot.com/2018/03/set-your-browser-on-fire-with-p5js.html
 
     var fireElemLenght  = 6;
@@ -66,8 +70,9 @@ function processingCode(p) {
     var nbColors    = 255;  // Nb Colors in the palette
     var palette     = [];   // our color palette for the fire
 
-    var buffer;             // Saves buffer to screen for use
+    // END FIRE EFFECT
 
+    var buffer;             // Saves buffer to screen for use
     var yScale = 1;         // used to scale the fire image to give the impression of growing or shrinking
 
     p.preload = function () {
@@ -87,7 +92,8 @@ function processingCode(p) {
       p.colorMode(p.RGB);
       campfireSound.loop();
       buffer = p.createGraphics(640, 480);
-      
+      mic = new P5.AudioIn();
+      mic.start();
 
       // 2D Fire: init size of fire
       fireWidth   = p.int(buffer.width / fireElemLenght);
@@ -130,11 +136,15 @@ function processingCode(p) {
           break;
 
         default:
+          // Run function that checks for continuous microphone input to decrease the scale, and thus bring back the fire
+          stokeFireWithMicrophone();
+          console.log(yScale);
+        
           // check the yScale to make sure it doesn't exceed the boundary
           if (yScale <= 4) {
             yScale += 0.001;
           }
-        
+
           // We clean the buffer background each time
           p.background(0);
           buffer.background(0,0,0);
@@ -152,7 +162,7 @@ function processingCode(p) {
           p.push();
             //p.image(buffer, 0, 0);
             p.scale(1, yScale);
-            drawImageToBottomOrFit(buffer, 0.5);
+            drawImageToBottomOrFit(buffer, 1);
           p.pop();
 
           // Draw Text on Top
@@ -397,6 +407,23 @@ function processingCode(p) {
       location.reload();
     }
 
+/*-------------------------------------------------------------------------------------------------------*/
+    // MICROPHONE INTERACTION
+
+    function stokeFireWithMicrophone () {
+      var vol = mic.getLevel();
+      if (vol > .13 && counter < 20) {
+          counter ++;
+      }
+      else if (vol > .13 && counter === 20) {
+        if (yScale < 1.1) yScale = 1;  
+        else if (yScale >= 1.1) yScale -= .2;
+          counter = 0;
+      }
+      else {
+          counter = 0;
+      }
+    }
 
 /*-------------------------------------------------------------------------------------------------------*/
     // TEXT INPUT
