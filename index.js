@@ -68,6 +68,7 @@ function processingCode(p) {
 
     var buffer;             // Saves buffer to screen for use
 
+    var yScale = 1;         // used to scale the fire image to give the impression of growing or shrinking
 
     p.preload = function () {
       f = p.loadFont("assets/Arial.ttf");
@@ -86,6 +87,7 @@ function processingCode(p) {
       p.colorMode(p.RGB);
       campfireSound.loop();
       buffer = p.createGraphics(640, 480);
+      
 
       // 2D Fire: init size of fire
       fireWidth   = p.int(buffer.width / fireElemLenght);
@@ -108,10 +110,6 @@ function processingCode(p) {
 
     }
 
-    p.update = function () {
-      
-    }
-
     p.draw = function () {
       switch (scene) {
         case "titleScreen":
@@ -132,8 +130,13 @@ function processingCode(p) {
           break;
 
         default:
-          p.background(0);
+          // check the yScale to make sure it doesn't exceed the boundary
+          if (yScale <= 4) {
+            yScale += 0.001;
+          }
+        
           // We clean the buffer background each time
+          p.background(0);
           buffer.background(0,0,0);
     
           // We generate a new base fire line (to make it 'move')
@@ -146,10 +149,11 @@ function processingCode(p) {
           drawFire();
 
           // Display the buffer as a background
-          // p.push();
+          p.push();
             //p.image(buffer, 0, 0);
+            p.scale(1, yScale);
             drawImageToBottomOrFit(buffer, 0.5);
-          // p.pop();
+          p.pop();
 
           // Draw Text on Top
           p.fill(255);
