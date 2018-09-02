@@ -1,3 +1,5 @@
+/*-------------------------------------------------------------------------------------------------------*/
+
 // Required Libraries
 var Jquery = require('jquery'); // adding jquery as needed by Tracery
 var tracery = require('tracery-grammar'); // import Tracery for tacery generative text tests;
@@ -8,7 +10,16 @@ require("p5/lib/addons/p5.dom");
 
 /*-------------------------------------------------------------------------------------------------------*/
 
-// Required Local Libraries
+// Credit to External Sources
+
+// 1. Julien G. of Kampeki Factory "Set Your Brower on Fire with p5js"
+// Credit to Julien G. of Kampeki Factory
+// https://kampeki-factory.blogspot.com/2018/03/set-your-browser-on-fire-with-p5js.html
+
+// 2. Credit to oksmith for original public domain source image "Bonfire"
+// https://openclipart.org/detail/300895/bonfire
+
+// 3. Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
 
 /*-------------------------------------------------------------------------------------------------------*/
 
@@ -57,7 +68,7 @@ function processingCode(p) {
     var counter; // for counting how long sustained microphone input has been received
 
     // Parameters for Fire Effect
-    // Credit to Julien G. (need to find proper name and add full credits later)
+    // Credit to Julien G. of Kampeki Factory
     // https://kampeki-factory.blogspot.com/2018/03/set-your-browser-on-fire-with-p5js.html
 
     var fireElemLenght  = 6;
@@ -79,7 +90,10 @@ function processingCode(p) {
       f = p.loadFont("assets/Arial.ttf");
       campfire = p.loadImage("assets/campfire_HD.png");
       campfire_title_landscape = p.loadImage("assets/campfire_title_screen.png");
-      campfireSound = p.loadSound("assets/campfire-sound.wav"); // https://freesound.org/people/aerror/sounds/350757/
+      campfireSound = p.loadSound("assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
+      forestAtDawn = p.loadSound("assets/forest-at-dawn.mp3") // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
+      magicalForest = p.loadSound("assets/MagicalForest.mp3"); // Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
+      forestAtNight = p.loadSound("assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
     }
     
     p.setup = function () {
@@ -90,7 +104,11 @@ function processingCode(p) {
       p.textAlign(p.CENTER);
       p.smooth();
       p.colorMode(p.RGB);
+      //randomizeStartupAudio();
       campfireSound.loop();
+      forestAtDawn.loop();
+      forestAtNight.loop();
+      magicalForest.loop();
       buffer = p.createGraphics(640, 480);
       mic = new P5.AudioIn();
       mic.start();
@@ -138,10 +156,11 @@ function processingCode(p) {
         default:
           // Run function that checks for continuous microphone input to decrease the scale, and thus bring back the fire
           stokeFireWithMicrophone();
-          console.log(yScale);
-        
+          // console.log(yScale);
+
+          // checks to make sure that the mic is enabled before decreasing fire size
           // check the yScale to make sure it doesn't exceed the boundary
-          if (yScale <= 4) {
+          if (yScale <= 4 && mic.enabled) {
             yScale += 0.001;
           }
 
@@ -408,20 +427,34 @@ function processingCode(p) {
     }
 
 /*-------------------------------------------------------------------------------------------------------*/
+    // AUDIO FUNCTIONS
+
+    function randomizeStartupAudio () {
+      var selector = p.random(3);
+      console.log(selector);
+    }
+
+/*-------------------------------------------------------------------------------------------------------*/
     // MICROPHONE INTERACTION
 
     function stokeFireWithMicrophone () {
       var vol = mic.getLevel();
-      if (vol > .13 && counter < 20) {
-          counter ++;
-      }
-      else if (vol > .13 && counter === 20) {
-        if (yScale < 1.1) yScale = 1;  
-        else if (yScale >= 1.1) yScale -= .2;
-          counter = 0;
-      }
-      else {
-          counter = 0;
+      
+      // if (vol > .13 && counter < 10) {
+      //     counter ++;
+      // }
+      // else if (vol > .13 && counter === 10) {
+      //   if (yScale < 1.2) yScale = 1;  
+      //   else if (yScale >= 1.2) yScale -= .2;
+      //     counter = 0;
+      // }
+      // else {
+      //     counter = 0;
+      // }
+      // this doesn't work as well because it doesn't have an immediate response. Intermittent external audio doesn't affect the program if the scale delta is very small
+
+      if (vol > .13) {
+        if (yScale > 1) yScale -= .02;
       }
     }
 
