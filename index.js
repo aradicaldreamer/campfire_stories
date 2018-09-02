@@ -109,7 +109,7 @@ function processingCode(p) {
       forestAtDawn.loop();
       forestAtNight.loop();
       magicalForest.loop();
-      buffer = p.createGraphics(640, 480);
+      buffer = p.createGraphics(400, 300);
       mic = new P5.AudioIn();
       mic.start();
 
