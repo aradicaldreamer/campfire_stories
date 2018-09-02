@@ -64,8 +64,18 @@ function processingCode(p) {
     var input; // used to store user text input
     p.pixelDensity(1); // fix for scaling issues with buffer usage on Retina Displays
     
-    // var mic; // variable for configuring microphone input
-    var counter; // for counting how long sustained microphone input has been received
+    // asset variables
+
+    var loading = false;
+    // var counter = 0; // for animating loading bar
+    // var totalAssets = 7; // total number of assets to be loaded at startup
+    // var campfire;
+    // var campfire_title_landscape;
+    // var forestAtDawn;
+    // var forestAtNight;
+    // var magicalForest;
+    // var campfireSound;
+    // var gameFont;
 
     // Parameters for Fire Effect
     // Credit to Julien G. of Kampeki Factory
@@ -87,7 +97,7 @@ function processingCode(p) {
     var yScale = 1;         // used to scale the fire image to give the impression of growing or shrinking
 
     p.preload = function () {
-      f = p.loadFont("assets/Arial.ttf");
+      gameFont = p.loadFont("assets/Arial.ttf");
       campfire = p.loadImage("assets/campfire_HD.png");
       campfire_title_landscape = p.loadImage("assets/campfire_title_screen.png");
       campfireSound = p.loadSound("assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
@@ -96,17 +106,28 @@ function processingCode(p) {
       forestAtNight = p.loadSound("assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
     }
     
+    function customPreload () {      
+      preloadFont(gameFont, "assets/Arial.ttf");
+      preloadImage(campfire_title_landscape, "assets/campfire_title_screen.png");
+      preloadImage(campfire, "assets/campfire_HD.png");
+      preloadSound(campfireSound, "assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
+      preloadSound(forestAtDawn, "assets/forest-at-dawn.mp3"); // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
+      preloadSound(magicalForest, "assets/MagicalForest.mp3"); // Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
+      preloadSound(forestAtNight, "assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
+    }
+
     p.setup = function () {
+      // customPreload();
       var canvas = p.createCanvas(p.windowWidth, p.windowHeight);
       canvas.parent("game");
-      p.textFont(f);
+      // p.textFont(gameFont);
       p.textSize(60);
       p.textAlign(p.CENTER);
       p.smooth();
       p.colorMode(p.RGB);
       //randomizeStartupAudio();
       campfireSound.loop();
-      forestAtDawn.loop();
+      // forestAtDawn.loop();
       forestAtNight.loop();
       magicalForest.loop();
       buffer = p.createGraphics(400, 300);
@@ -137,7 +158,14 @@ function processingCode(p) {
     p.draw = function () {
       switch (scene) {
         case "titleScreen":
-          drawTitle();
+          if (loading){
+            p.textAlign(p.CENTER);
+            p.fill(255);
+            p.text("Loading", 0, 0);
+          }
+          else{
+            drawTitle();
+          }
           break;
 
         case "final":
@@ -224,6 +252,49 @@ function processingCode(p) {
         grammar.pushRules("vbd" + i,[vbd]);
       }
     }
+
+    // CUSTOM PRELOAD FUNCTIONS
+
+    // function preloadFont(fontName, filename) {
+    //   p.loadFont(filename, fontLoaded);
+      
+    //   function fontLoaded(font) {
+    //     console.log(filename);
+    //     fontName = font;
+    //     p.textFont(fontName);
+    //     counter++;
+    //     if (counter == totalAssets) {
+    //       loading = false;
+    //     }
+    //   }
+    // }
+
+    // function preloadImage(imageName, filename) {
+    //   p.loadImage(filename, imageLoaded);
+      
+    //   function imageLoaded(image) {
+    //     console.log(filename);
+    //     imageName = image;
+    //     counter++;
+    //     if (counter == totalAssets) {
+    //       loading = false;
+    //     }
+    //   }
+    // }
+
+    // function preloadSound(song, filename) {
+    //   p.loadSound(filename, soundLoaded);
+      
+    //   function soundLoaded(sound) {
+    //     console.log(filename);
+    //     song = sound;
+    //     song.loop();
+    //     counter++;
+    //     if (counter == totalAssets) {
+    //       loading = false;
+    //     }
+    //   }
+    // }
 
 /*-------------------------------------------------------------------------------------------------------*/
 
