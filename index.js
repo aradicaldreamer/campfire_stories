@@ -58,24 +58,16 @@ function processingCode(p) {
     populateGrammar(); // function to populate the grammar with words from the RitaJS lexicon
     var traceryText = grammar.flatten("#start#");
     var displayText = traceryText;
-    var wholeStory = "This is what you answered!\n";
+    var wholeStory;
     var bg = "#676969"; // background color
     var scene = "titleScreen"; // sets the initial state to the title screen
     var input; // used to store user text input
     p.pixelDensity(1); // fix for scaling issues with buffer usage on Retina Displays
-    
-    // asset variables
 
-    var loading = false;
-    // var counter = 0; // for animating loading bar
-    // var totalAssets = 7; // total number of assets to be loaded at startup
-    // var campfire;
-    // var campfire_title_landscape;
-    // var forestAtDawn;
-    // var forestAtNight;
-    // var magicalForest;
-    // var campfireSound;
-    // var gameFont;
+    // variables for storing and manipulating offscreen graphics buffer
+
+    var buffer;             // Saves buffer to screen for use
+    var yScale = 2;         // used to scale the fire image to give the impression of growing or shrinking, and to start it to give the appearance of being low
 
     // Parameters for Fire Effect
     // Credit to Julien G. of Kampeki Factory
@@ -93,8 +85,8 @@ function processingCode(p) {
 
     // END FIRE EFFECT
 
-    var buffer;             // Saves buffer to screen for use
-    var yScale = 1;         // used to scale the fire image to give the impression of growing or shrinking
+/*-------------------------------------------------------------------------------------------------------*/
+    // PRELOAD METHOD
 
     p.preload = function () {
       gameFont = p.loadFont("assets/Arial.ttf");
@@ -116,12 +108,16 @@ function processingCode(p) {
       preloadSound(forestAtNight, "assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
     }
 
+/*-------------------------------------------------------------------------------------------------------*/
+
+    // SETUP METHOD
+
     p.setup = function () {
       // customPreload();
       var canvas = p.createCanvas(p.windowWidth, p.windowHeight);
       canvas.parent("game");
       // p.textFont(gameFont);
-      p.textSize(60);
+      p.textSize(24);
       p.textAlign(p.CENTER);
       p.smooth();
       p.colorMode(p.RGB);
@@ -134,19 +130,7 @@ function processingCode(p) {
       mic = new P5.AudioIn();
       mic.start();
 
-      // 2D Fire: init size of fire
-      fireWidth   = p.int(buffer.width / fireElemLenght);
-      fireHeight  = p.int(buffer.height / fireElemLenght);
-      p.print(fireWidth + ", " + fireHeight);
-    
-      // for each fire's 'lines'
-      for(var i= 0; i<fireHeight; i++)
-      {
-        fireLines[i] = [];      // create the new line of fire pixels
-        
-        for(var x=0; x<fireWidth; x++)
-        fireLines[i][x] = 0;  // Initialize to black
-      }
+      initalizeFire();
     
       // generate fire colors palette
       initializePalette();
@@ -155,17 +139,19 @@ function processingCode(p) {
 
     }
 
+/*-------------------------------------------------------------------------------------------------------*/
+
+    // DRAW METHOD
+
     p.draw = function () {
       switch (scene) {
         case "titleScreen":
-          if (loading){
-            p.textAlign(p.CENTER);
-            p.fill(255);
-            p.text("Loading", 0, 0);
-          }
-          else{
-            drawTitle();
-          }
+          drawTitle();
+          break;
+
+        case "intro":
+          defaultScene();
+          introCheck();
           break;
 
         case "final":
@@ -182,42 +168,49 @@ function processingCode(p) {
           break;
 
         default:
-          // Run function that checks for continuous microphone input to decrease the scale, and thus bring back the fire
-          stokeFireWithMicrophone();
-          // console.log(yScale);
-
-          // checks to make sure that the mic is enabled before decreasing fire size
-          // check the yScale to make sure it doesn't exceed the boundary
-          if (yScale <= 4 && mic.enabled) {
-            yScale += 0.001;
-          }
-
-          // We clean the buffer background each time
-          p.background(0);
-          buffer.background(0,0,0);
-    
-          // We generate a new base fire line (to make it 'move')
-          initFireLine();
-    
-          // Compute the whole fire pixels
-          fireGrow();
-    
-          // Draw fire to buffer
-          drawFire();
-
-          // Display the buffer as a background
-          p.push();
-            //p.image(buffer, 0, 0);
-            p.scale(1, yScale);
-            drawImageToBottomOrFit(buffer, 1);
-          p.pop();
-
-          // Draw Text on Top
-          p.fill(255);
-          p.textSize(32);
-          p.textAlign(p.CENTER);
-          p.text(displayText,0,0,p.windowWidth-50,p.windowHeight - 100);
+          defaultScene();
       }
+    }
+
+    function defaultScene () {
+                // Run function that checks for continuous microphone input to decrease the scale, and thus bring back the fire
+                stokeFireWithMicrophone();
+                // console.log(yScale);
+      
+                // checks to make sure that the mic is enabled before decreasing fire size
+                // check the yScale to make sure it doesn't exceed the boundary
+                if (yScale <= 4 && mic.enabled) {
+                  yScale += 0.001;
+                }
+                else {
+                  yScale = 1;
+                }
+      
+                // We clean the buffer and background each time
+                p.background(0);
+                buffer.background(0,0,0);
+          
+                // We generate a new base fire line (to make it 'move')
+                initFireLine();
+          
+                // Compute the whole fire pixels
+                fireGrow();
+          
+                // Draw fire to buffer
+                drawFire();
+      
+                // Display the buffer as a background
+                p.push();
+                  //p.image(buffer, 0, 0);
+                  p.scale(1, yScale);
+                  drawImageToBottomOrFit(buffer, 1);
+                p.pop();
+      
+                // Draw Text on Top
+                p.fill(255);
+                p.textSize('1em');
+                p.textAlign(p.CENTER);
+                p.text(displayText,0,0,p.windowWidth-50,p.windowHeight - 100);
     }
     
 /*-------------------------------------------------------------------------------------------------------*/
@@ -417,37 +410,61 @@ function processingCode(p) {
 
     }
 
+    function initalizeFire() {
+      // 2D Fire: init size of fire
+      fireWidth   = p.int(buffer.width / fireElemLenght);
+      fireHeight  = p.int(buffer.height / fireElemLenght);
+      p.print(fireWidth + ", " + fireHeight);
+    
+      // for each fire's 'lines'
+      for(var i= 0; i<fireHeight; i++)
+      {
+        fireLines[i] = [];      // create the new line of fire pixels
+        
+        for(var x=0; x<fireWidth; x++)
+        fireLines[i][x] = 0;  // Initialize to black
+      }
+    }
+
 /*-------------------------------------------------------------------------------------------------------*/
     
     // USER INTERACTIONS
 
-    p.windowResized = function () {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
-    }
-
     p.mouseReleased = function () {
-      sceneManager();
+      // sceneManager();
+      if (scene === "titleScreen") {
+        scene = "intro";
+      }
     }
 
     p.touchEnded = function () {
-      sceneManager();
+      if (scene === "titleScreen") {
+        scene = "intro";
+      }
     }
 
 /*-------------------------------------------------------------------------------------------------------*/
-    // BUTTONS
+    // SCENE FUNCTIONS
+
+    // This function checks to see if the player has passed a check
+    function introCheck () {
+      if (yScale <= 1) {
+        displayText = grammar.flatten("#question1#");
+        userInput();
+        scene = 1;
+      }
+    }
+    
+    // this function is called in scenes that do not require text entry from the player
 
     function sceneManager () {
       switch (scene) {
         case "titleScreen":
-          scene = 0;
-          touchToContinue();
+          // scene = "introScene";
+          // touchToContinue();
           break;
         
         case 0:
-          continueButton.hide();
-          displayText = grammar.flatten("#question1#");
-          userInput();
-          scene = 1;
           break;
 
         case 6:
@@ -465,6 +482,71 @@ function processingCode(p) {
       }
     }
 
+    // This function is called in scenes with text input from the player
+
+    function newStoryElement () {
+      // Removing all special characters from input
+      switch (scene) {
+              
+        case 1:
+          var val = input.value();
+          textCheck(val);
+          grammar.pushRules("answer1", [val]);
+          input.value('');
+          displayText = grammar.flatten("#question2#");
+          wholeStory = wholeStory + "\n" + val;
+          scene = 2;
+          break;
+
+        case 2: 
+          var val = input.value();
+          textCheck(val);
+          grammar.pushRules("answer2", [val]);
+          input.value('');
+          displayText = grammar.flatten("#question3#");
+          wholeStory = wholeStory + "\n" + val;
+          scene = 3;
+          break;
+
+        case 3: 
+          var val = input.value();
+          textCheck(val);
+          grammar.pushRules("answer3", [val]);
+          input.value('');
+          displayText = grammar.flatten("#question4#");
+          wholeStory = wholeStory + "\n" + val;
+          scene = 4;
+          break;
+
+        case 4: 
+          var val = input.value();
+          textCheck(val);
+          grammar.pushRules("answer4", [val]);
+          input.value('');
+          displayText = grammar.flatten("#question5#");
+          wholeStory = wholeStory + "\n" + val;
+          scene = 5;
+          break;
+
+          case 5: 
+          var val = input.value();
+          textCheck(val);
+          grammar.pushRules("answer5", [val]);
+          input.value('');
+          input.hide();
+          displayText = grammar.flatten("#transition#");
+          wholeStory = wholeStory + "\n" + val;
+          touchToContinue();
+          scene = 6;
+          break;
+
+        default:
+      }
+    }
+
+/*-------------------------------------------------------------------------------------------------------*/
+    // BUTTONS
+
     function touchToContinue () {
       continueButton = p.createButton("Continue");
       continueButton.size(p.windowWidth - 32);
@@ -475,8 +557,8 @@ function processingCode(p) {
       continueButton.style("color", "white");
       continueButton.style("border-color", "white");
       continueButton.style("font-size", "2em");
-      // continueButton.mouseReleased(sceneManager);
-      // continueButton.touchEnded(sceneManager);
+      continueButton.mouseReleased(sceneManager);
+      continueButton.touchEnded(sceneManager);
     }
 
     function touchToRestart () {
@@ -548,66 +630,6 @@ function processingCode(p) {
       input.changed(newStoryElement);
     }
 
-    function newStoryElement () {
-      // Removing all special characters from input
-      switch (scene) {
-              
-        case 1:
-          var val = input.value();
-          textCheck(val);
-          grammar.pushRules("answer1", [val]);
-          input.value('');
-          displayText = grammar.flatten("#question2#");
-          wholeStory = wholeStory + "\n" + val;
-          scene = 2;
-          break;
-
-        case 2: 
-          var val = input.value();
-          textCheck(val);
-          grammar.pushRules("answer2", [val]);
-          input.value('');
-          displayText = grammar.flatten("#question3#");
-          wholeStory = wholeStory + "\n" + val;
-          scene = 3;
-          break;
-
-        case 3: 
-          var val = input.value();
-          textCheck(val);
-          grammar.pushRules("answer3", [val]);
-          input.value('');
-          displayText = grammar.flatten("#question4#");
-          wholeStory = wholeStory + "\n" + val;
-          scene = 4;
-          break;
-
-        case 4: 
-          var val = input.value();
-          textCheck(val);
-          grammar.pushRules("answer4", [val]);
-          input.value('');
-          displayText = grammar.flatten("#question5#");
-          wholeStory = wholeStory + "\n" + val;
-          scene = 5;
-          break;
-
-          case 5: 
-          var val = input.value();
-          textCheck(val);
-          grammar.pushRules("answer5", [val]);
-          input.value('');
-          input.hide();
-          displayText = grammar.flatten("#transition#");
-          wholeStory = wholeStory + "\n" + val;
-          touchToContinue();
-          scene = 6;
-          break;
-
-        default:
-      }
-    }
-
     // For now, this just checks to make sure certain characters arent in the text. In the future, it may check for swear words to set a flag to deny sharing
 
     function textCheck (val) {
@@ -669,16 +691,10 @@ function processingCode(p) {
 
 /*-------------------------------------------------------------------------------------------------------*/
 
-    // DRAWING FUNCTIONS
-
-    // var test = {
-    //   drawTitle: function () {
-    //     p.background(bg); // sets background color to standard
-    //     drawImageToBottomOrFit(campfire_title_landscape);
-    //   }
-    // }    
+    // DRAWING FUNCTIONS  
 
     function clearCanvas () {
+      p.fill(bg);
       p.rect(0,0, p.windowWidth, p.windowHeight);
     }
     
@@ -696,7 +712,15 @@ function processingCode(p) {
     function drawTitle () {
       p.background(bg); // sets background color to standard
       drawImageToBottomOrFit(campfire_title_landscape, 0.5);
+      // touchToContinue();
       //portraitBorder(); // adds a dark border underneath the title image. This doesn't work well
+    }
+
+    // For Redrawing the game when the window is resized
+    p.windowResized = function () {
+      // p.resizeCanvas(p.windowWidth, p.windowHeight);
+      // clearCanvas();
+      // p.redraw();
     }
 
     // This function adds a matching trim under the title screen

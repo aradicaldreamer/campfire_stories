@@ -1,7 +1,10 @@
 module.exports = {
-    start: ["[hero:#names#]#story#"],
-    names: ["Matthew", "Alex", "Ben", "Doruk", "Ece", "Hugh", "Jade", "Julia", "Phoenix", "Raymond", "Tommy"],
-    story: ["Welcome to Campfire Tales! My name is #hero# and we're going to make a story together. First, let's get to know each other better so I can make the best story for you."],
+    start: ["[narrator:#names#]#story#"],
+    playerName: ["stranger", "wanderer", "newcomer", "visitor", "newcomer", "foreigner", "outlander", "outsider", "friend",],
+    story: ["Welcome to my corner of the woods #playerName#. It's #embellishment# #feeling# #timeOfDay#. Can you help me start this here fire by blowing on your microphone?"],
+    embellishment: ["so", "extremely", "very", "disturbingly", "horrendously", "unusually"],
+    timeOfDay: ["tonight", "this evening", "out here"],
+    feeling: ["quiet", "cold", "dark", "lonely"],
     question1: ["What is your name"],
     question2: ["How old are you?"],
     question3: ["What are you afraid of?"],
@@ -9,5 +12,5 @@ module.exports = {
     question5: ["Your neighbor has been dumping garbage on your lawn for the past few weeks. What special name have you got for him now?"],
     transition: ["You've answered all of my questions! Let's get started"],
     dreamSequence: ["Crazy effect I haven't made yet", "Fur ... EVERYWHERE", "Dinosaurs with Jetpacks. Woo"],
-    beginning: ["THE END"]
+    ending: ["This is one potential ending: James did many things that he was not supposed to do, and this was the worst. James was told not to use his computer, and this time he did. He went online and began to tell stories that were not true. Posting bad comments lies about others. James kept telling these stories until one day he became them, and is now telling them to you! BOO!"]
 };
