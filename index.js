@@ -66,7 +66,7 @@ function processingCode(p) {
     p.pixelDensity(1); // fix for scaling issues with buffer usage on Retina Displays
 
     // variables for manipulating canvas
-    var stretch = 5; // This value is used in the final scene to create a stretch by multiplying the window height with this value
+    var stretch = 3; // This value is used in the final scene to create a stretch by multiplying the window height with this value
 
     // variables for storing and manipulating offscreen graphics buffer
 
@@ -96,10 +96,10 @@ function processingCode(p) {
       gameFont = p.loadFont("assets/Arial.ttf");
       campfire = p.loadImage("assets/campfire_HD.png");
       campfire_title_landscape = p.loadImage("assets/campfire_title_screen.png");
-      // campfireSound = p.loadSound("assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
-      // forestAtDawn = p.loadSound("assets/forest-at-dawn.mp3") // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
-      // magicalForest = p.loadSound("assets/MagicalForest.mp3"); // Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
-      // forestAtNight = p.loadSound("assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
+      campfireSound = p.loadSound("assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
+      forestAtDawn = p.loadSound("assets/forest-at-dawn.mp3") // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
+      magicalForest = p.loadSound("assets/MagicalForest.mp3"); // Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
+      forestAtNight = p.loadSound("assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
     }
     
     function customPreload () {      
@@ -125,11 +125,11 @@ function processingCode(p) {
       p.textAlign(p.CENTER);
       p.smooth();
       p.colorMode(p.RGB);
-      //randomizeStartupAudio();
-      // campfireSound.loop();
-      // // forestAtDawn.loop();
-      // forestAtNight.loop();
-      // magicalForest.loop();
+      // randomizeStartupAudio();
+      campfireSound.loop();
+      // forestAtDawn.loop();
+      forestAtNight.loop();
+      magicalForest.loop();
       buffer = p.createGraphics(400, 300);
       mic = new P5.AudioIn();
       mic.start();
@@ -168,7 +168,7 @@ function processingCode(p) {
           p.fill(255);
           p.textSize(32);
           p.textAlign(p.CENTER);
-          p.text(wholeStory,0,0,p.windowWidth-50,p.windowHeight - 100);
+          p.text(wholeStory,0,100,p.windowWidth-50,(p.windowHeight * stretch) - 100);
           break;
 
         default:
@@ -501,6 +501,60 @@ function processingCode(p) {
           scene = "questionFour";
           break;
 
+        case "sceneSix":
+          displayText = grammar.flatten("#sceneSeven#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "sceneSeven";
+          break;
+
+        case "sceneSeven":
+          displayText = grammar.flatten("#sceneEight#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "sceneEight";
+          break;
+
+        case "sceneEight":
+          displayText = grammar.flatten("#sceneNine#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "sceneNine";
+          break;
+
+        case "sceneNine":
+          displayText = grammar.flatten("#sceneTen#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "sceneTen";
+          break;
+
+        case "sceneTen":
+          displayText = grammar.flatten("#endingOne#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "endingOne";
+          displayText += "\n" + "\n" + "Run";
+          break;
+
+        case "endingOne":
+          displayText = grammar.flatten("#endingTwo#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "endingTwo";
+          displayText += "\n" + "\n" + "GET OUT NOW";
+          break;
+
+        case "endingTwo":
+          continueButton.hide();
+          input.show();
+          displayText = grammar.flatten("#endingQuestion#");
+          // wholeStory += displayText + "\n" + "\n";
+          scene = "endingQuestion";
+          break;
+
+        case "endingThree":
+          continueButton.hide();
+          saveStoryButton();
+          displayText = grammar.flatten("#endingFour#");
+          // wholeStory += displayText + "\n" + "\n";
+          // scene = "endingFour";
+          break;
+
         case 6:
           displayText = grammar.flatten("#dreamSequence#");
           scene = 7;
@@ -582,7 +636,19 @@ function processingCode(p) {
           scene = "sceneSix";
           break;
 
-          case 500: 
+        case "endingQuestion": 
+          var val = input.value();
+          textCheck(val);
+          grammar.pushRules("trueName", [val]);
+          input.value('');
+          displayText = grammar.flatten("#endingThree#");
+          wholeStory += displayText + "\n" + "\n";
+          input.hide();
+          continueButton.show();
+          scene = "endingThree";
+          break;
+
+        case 500: 
           var val = input.value();
           textCheck(val);
           grammar.pushRules("answer5", [val]);
@@ -619,7 +685,7 @@ function processingCode(p) {
       restartButton = p.createButton("Restart?");
       restartButton.size(p.windowWidth - 32);
       restartButton.style("position", "absolute");
-      restartButton.style("bottom", "16px");
+      restartButton.style("top", "16px");
       restartButton.style("left", "16px");
       restartButton.style("background-color", bg);
       restartButton.style("color", "white");
@@ -722,7 +788,7 @@ function processingCode(p) {
       p.fill(255);
       p.textSize(32);
       p.textAlign(p.CENTER);
-      p.text(wholeStory,0,0,p.windowWidth-50,p.windowHeight - 100);
+      p.text(wholeStory,0,0,p.windowWidth-50,(p.windowHeight * stretch) - 100);
       p.saveCanvas("myCampfireStory", "png");
       touchToRestart();
       feedbackAlert();
