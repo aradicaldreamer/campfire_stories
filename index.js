@@ -64,6 +64,7 @@ function processingCode(p) {
     var scene = "titleScreen"; // sets the initial state to the title screen
     var input; // used to store user text input
     p.pixelDensity(1); // fix for scaling issues with buffer usage on Retina Displays
+    var countdown = 1000;
 
     // variables for manipulating canvas
     var stretch = 3; // This value is used in the final scene to create a stretch by multiplying the window height with this value
@@ -97,7 +98,7 @@ function processingCode(p) {
       campfire = p.loadImage("assets/campfire_HD.png");
       campfire_title_landscape = p.loadImage("assets/campfire_title_screen.png");
       campfireSound = p.loadSound("assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
-      forestAtDawn = p.loadSound("assets/forest-at-dawn.mp3") // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
+      // forestAtDawn = p.loadSound("assets/forest-at-dawn.mp3") // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
       magicalForest = p.loadSound("assets/MagicalForest.mp3"); // Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
       forestAtNight = p.loadSound("assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
     }
@@ -125,11 +126,7 @@ function processingCode(p) {
       p.textAlign(p.CENTER);
       p.smooth();
       p.colorMode(p.RGB);
-      // randomizeStartupAudio();
-      campfireSound.loop();
-      // forestAtDawn.loop();
-      forestAtNight.loop();
-      magicalForest.loop();
+      backgroundAudio("loop");
       buffer = p.createGraphics(400, 300);
       mic = new P5.AudioIn();
       mic.start();
@@ -438,12 +435,14 @@ function processingCode(p) {
       // sceneManager();
       if (scene === "titleScreen") {
         scene = "intro";
+        backgroundAudio("pause");
       }
     }
 
     p.touchEnded = function () {
       if (scene === "titleScreen") {
         scene = "intro";
+        backgroundAudio("pause");
       }
     }
 
@@ -455,6 +454,7 @@ function processingCode(p) {
       if (yScale <= 1) {
         displayText = grammar.flatten("#opening#");
         touchToContinue();
+        backgroundAudio("play");
         scene = "sceneOne";
       }
     }
@@ -702,10 +702,38 @@ function processingCode(p) {
 /*-------------------------------------------------------------------------------------------------------*/
     // AUDIO FUNCTIONS
 
-    function randomizeStartupAudio () {
-      var selector = p.random(3);
-      console.log(selector);
+    function backgroundAudio (playbackState) {
+      switch (playbackState) {
+        case "loop":
+          campfireSound.loop();
+          // forestAtDawn.loop();
+          forestAtNight.loop();
+          magicalForest.loop();
+          break;
+        
+        case "pause":
+          campfireSound.pause();
+          // forestAtDawn.pause();
+          forestAtNight.pause();
+          magicalForest.pause();
+          break;
+
+        case "play":
+          campfireSound.play();
+          // forestAtDawn.play();
+          forestAtNight.play();
+          magicalForest.play();
+          break;
+
+        default:
+          break;
+      }
     }
+    
+    // function randomizeStartupAudio () {
+    //   var selector = p.random(3);
+    //   console.log(selector);
+    // }
 
 /*-------------------------------------------------------------------------------------------------------*/
     // MICROPHONE INTERACTION
