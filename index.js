@@ -455,7 +455,7 @@ function processingCode(p) {
       if (yScale <= 1) {
         displayText = grammar.flatten("#opening#");
         touchToContinue();
-        scene = 1;
+        scene = "sceneOne";
       }
     }
     
@@ -468,18 +468,39 @@ function processingCode(p) {
           // touchToContinue();
           break;
         
-        case 1:
-          continueButton.hide()
+        case "sceneOne":
+          continueButton.hide();
           userInput();
-          displayText = grammar.flatten("#sceneOne#")
+          displayText = grammar.flatten("#sceneOne#");
+          scene = "questionOne";
           break;
 
         case "sceneTwo":
-          continueButton.hide();
-          displayText = wholeStory;
-          saveStoryButton();
+          displayText = grammar.flatten("#sceneThree#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "sceneThree";
           break;
         
+        case "sceneThree":
+          displayText = grammar.flatten("#sceneFour#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "sceneFour";
+          break;
+
+        case "sceneFour":
+          displayText = grammar.flatten("#sceneFive#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "sceneFive";
+          break;
+
+        case "sceneFive":
+          continueButton.hide();
+          input.show();
+          displayText = grammar.flatten("#questionFour#");
+          wholeStory += displayText + "\n" + "\n";
+          scene = "questionFour";
+          break;
+
         case 6:
           displayText = grammar.flatten("#dreamSequence#");
           scene = 7;
@@ -516,47 +537,49 @@ function processingCode(p) {
       // Removing all special characters from input
       switch (scene) {
               
-        case 1:
+        case "questionOne":
           var val = input.value();
           textCheck(val);
           grammar.pushRules("likedName", [val]);
           input.value('');
           displayText = grammar.flatten("#question1#");
           // wholeStory = wholeStory + "\n" + val;
-          scene = 2;
+          scene = "questionTwo";
           break;
 
-        case 2: 
+        case "questionTwo": 
           var val = input.value();
           textCheck(val);
           grammar.pushRules("dislikedName", [val]);
           input.value('');
           displayText = grammar.flatten("#question2#");
           // wholeStory = wholeStory + "\n" + val;
-          scene = 3;
+          scene = "questionThree";
           break;
 
-        case 3: 
+        case "questionThree": 
           var val = input.value();
           textCheck(val);
           grammar.pushRules("reasonWhy", [val]);
           input.value('');
           displayText = grammar.flatten("#sceneTwo#");
           // wholeStory = wholeStory + "\n" + val;
-          wholeStory += displayText + "\n";
+          wholeStory += displayText + "\n" + "\n";
           input.hide();
           continueButton.show();
           scene = "sceneTwo";
           break;
 
-        case 400: 
+        case "questionFour": 
           var val = input.value();
           textCheck(val);
-          grammar.pushRules("answer4", [val]);
+          grammar.pushRules("playerFear", [val]);
           input.value('');
-          displayText = grammar.flatten("#question5#");
-          wholeStory = wholeStory + "\n" + val;
-          scene = 5;
+          displayText = grammar.flatten("#sceneSix#");
+          wholeStory += displayText + "\n" + "\n";
+          input.hide();
+          continueButton.show();
+          scene = "sceneSix";
           break;
 
           case 500: 
@@ -693,7 +716,7 @@ function processingCode(p) {
       p.resizeCanvas(p.windowWidth, p.windowHeight * stretch);
       p.background(bg);
       p.push();
-        p.translate(0,p.windowHeight # (stretch - 1));
+        p.translate(0,p.windowHeight * (stretch - 1));
         drawImageToBottomOrFit(campfire, 1);
       p.pop();
       p.fill(255);
@@ -713,12 +736,14 @@ function processingCode(p) {
     function feedbackAlert () {
       var answer = confirm ("I hope you've enjoyed playing Campfire Tales! I'd love your feedback to make the game better. Please click OK to fill out the form or cancel to play again")
       if (answer) {
-        window.location="https://goo.gl/forms/tgbSIIfrgRSOEBx23";
+        window.location= "https://goo.gl/forms/UBHGG3LGSrdL6YLh2";
       }
       // else {
       //   location.reload();
       // }
     }
+
+    // Form V1 "https://goo.gl/forms/tgbSIIfrgRSOEBx23";
 
 /*-------------------------------------------------------------------------------------------------------*/
 
