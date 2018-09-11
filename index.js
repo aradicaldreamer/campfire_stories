@@ -53,16 +53,20 @@ function processingCode(p) {
     // Global Initial Processing Variables  
 
     grammar = tracery.createGrammar(story); // creates a tracery grammar object from the default story JSON
+    grammar.addModifiers(tracery.baseEngModifiers); // this is critical and allows the use of tracery modifier functions like capitalize
     // var hero = grammar.selectRule("names"); // selects a name 
     // grammar.pushRules("hero", [hero]);
     populateGrammar(); // function to populate the grammar with words from the RitaJS lexicon
     var traceryText = grammar.flatten("#start#");
     var displayText = traceryText;
-    var wholeStory;
+    var wholeStory = "";
     var bg = "#676969"; // background color
     var scene = "titleScreen"; // sets the initial state to the title screen
     var input; // used to store user text input
     p.pixelDensity(1); // fix for scaling issues with buffer usage on Retina Displays
+
+    // variables for manipulating canvas
+    var stretch = 5; // This value is used in the final scene to create a stretch by multiplying the window height with this value
 
     // variables for storing and manipulating offscreen graphics buffer
 
@@ -92,10 +96,10 @@ function processingCode(p) {
       gameFont = p.loadFont("assets/Arial.ttf");
       campfire = p.loadImage("assets/campfire_HD.png");
       campfire_title_landscape = p.loadImage("assets/campfire_title_screen.png");
-      campfireSound = p.loadSound("assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
-      forestAtDawn = p.loadSound("assets/forest-at-dawn.mp3") // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
-      magicalForest = p.loadSound("assets/MagicalForest.mp3"); // Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
-      forestAtNight = p.loadSound("assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
+      // campfireSound = p.loadSound("assets/campfire-sound.mp3"); // https://freesound.org/people/aerror/sounds/350757/
+      // forestAtDawn = p.loadSound("assets/forest-at-dawn.mp3") // Felix Blume "Forest at dawn" https://freesound.org/people/felix.blume/sounds/328296/
+      // magicalForest = p.loadSound("assets/MagicalForest.mp3"); // Credit to Alex Fletcher for "Magical Forest" from the a.Wake() project
+      // forestAtNight = p.loadSound("assets/forest-at-night.mp3"); // Felix Blume "Forest at night" https://freesound.org/people/felix.blume/sounds/328293/
     }
     
     function customPreload () {      
@@ -122,10 +126,10 @@ function processingCode(p) {
       p.smooth();
       p.colorMode(p.RGB);
       //randomizeStartupAudio();
-      campfireSound.loop();
-      // forestAtDawn.loop();
-      forestAtNight.loop();
-      magicalForest.loop();
+      // campfireSound.loop();
+      // // forestAtDawn.loop();
+      // forestAtNight.loop();
+      // magicalForest.loop();
       buffer = p.createGraphics(400, 300);
       mic = new P5.AudioIn();
       mic.start();
@@ -158,8 +162,8 @@ function processingCode(p) {
           p.background(bg);
           // p.image(campfire,0,p.windowHeight,p.windowWidth, p.windowHeight);
           p.push();
-            p.translate(0,p.windowHeight);
-            drawImageToBottomOrFit(campfire);
+            p.translate(0,p.windowHeight * (stretch - 1));
+            drawImageToBottomOrFit(campfire, 1);
           p.pop();
           p.fill(255);
           p.textSize(32);
@@ -449,8 +453,8 @@ function processingCode(p) {
     // This function checks to see if the player has passed a check
     function introCheck () {
       if (yScale <= 1) {
-        displayText = grammar.flatten("#question1#");
-        userInput();
+        displayText = grammar.flatten("#opening#");
+        touchToContinue();
         scene = 1;
       }
     }
@@ -464,9 +468,18 @@ function processingCode(p) {
           // touchToContinue();
           break;
         
-        case 0:
+        case 1:
+          continueButton.hide()
+          userInput();
+          displayText = grammar.flatten("#sceneOne#")
           break;
 
+        case "sceneTwo":
+          continueButton.hide();
+          displayText = wholeStory;
+          saveStoryButton();
+          break;
+        
         case 6:
           displayText = grammar.flatten("#dreamSequence#");
           scene = 7;
@@ -478,6 +491,21 @@ function processingCode(p) {
           saveStoryButton();
           break;
 
+        case 50:
+          displayText = grammar.flatten("#warning#");
+          scene = 51;
+          break;
+
+        case 51:
+        displayText = grammar.flatten("#warning.capitalize#");
+        scene = 52;
+        break;
+
+        case 52:
+        displayText = grammar.flatten("#warning.capitalizeAll#");
+        scene = 53;
+        break;
+        
         default:
       }
     }
@@ -491,34 +519,37 @@ function processingCode(p) {
         case 1:
           var val = input.value();
           textCheck(val);
-          grammar.pushRules("answer1", [val]);
+          grammar.pushRules("likedName", [val]);
           input.value('');
-          displayText = grammar.flatten("#question2#");
-          wholeStory = wholeStory + "\n" + val;
+          displayText = grammar.flatten("#question1#");
+          // wholeStory = wholeStory + "\n" + val;
           scene = 2;
           break;
 
         case 2: 
           var val = input.value();
           textCheck(val);
-          grammar.pushRules("answer2", [val]);
+          grammar.pushRules("dislikedName", [val]);
           input.value('');
-          displayText = grammar.flatten("#question3#");
-          wholeStory = wholeStory + "\n" + val;
+          displayText = grammar.flatten("#question2#");
+          // wholeStory = wholeStory + "\n" + val;
           scene = 3;
           break;
 
         case 3: 
           var val = input.value();
           textCheck(val);
-          grammar.pushRules("answer3", [val]);
+          grammar.pushRules("reasonWhy", [val]);
           input.value('');
-          displayText = grammar.flatten("#question4#");
-          wholeStory = wholeStory + "\n" + val;
-          scene = 4;
+          displayText = grammar.flatten("#sceneTwo#");
+          // wholeStory = wholeStory + "\n" + val;
+          wholeStory += displayText + "\n";
+          input.hide();
+          continueButton.show();
+          scene = "sceneTwo";
           break;
 
-        case 4: 
+        case 400: 
           var val = input.value();
           textCheck(val);
           grammar.pushRules("answer4", [val]);
@@ -528,7 +559,7 @@ function processingCode(p) {
           scene = 5;
           break;
 
-          case 5: 
+          case 500: 
           var val = input.value();
           textCheck(val);
           grammar.pushRules("answer5", [val]);
@@ -536,7 +567,7 @@ function processingCode(p) {
           input.hide();
           displayText = grammar.flatten("#transition#");
           wholeStory = wholeStory + "\n" + val;
-          touchToContinue();
+          // touchToContinue();
           scene = 6;
           break;
 
@@ -659,11 +690,11 @@ function processingCode(p) {
       scene = "final";
       saveButton.hide();
       //clearCanvas();
-      p.resizeCanvas(p.windowWidth, p.windowHeight * 2);
+      p.resizeCanvas(p.windowWidth, p.windowHeight * stretch);
       p.background(bg);
       p.push();
-        p.translate(0,p.windowHeight);
-        drawImageToBottomOrFit(campfire, 0.5);
+        p.translate(0,p.windowHeight # (stretch - 1));
+        drawImageToBottomOrFit(campfire, 1);
       p.pop();
       p.fill(255);
       p.textSize(32);
