@@ -57,8 +57,10 @@ function processingCode(p) {
     // var hero = grammar.selectRule("names"); // selects a name 
     // grammar.pushRules("hero", [hero]);
     populateGrammar(); // function to populate the grammar with words from the RitaJS lexicon
-    var traceryText = grammar.flatten("#start#");
+    // var traceryText = new RiString('');
+    var traceryText = (grammar.flatten("#start#"));
     var displayText = traceryText;
+    displayText = textFilter(displayText);
     var wholeStory = "";
     var bg = "#676969"; // background color
     var scene = "titleScreen"; // sets the initial state to the title screen
@@ -89,7 +91,6 @@ function processingCode(p) {
     var palette     = [];   // our color palette for the fire
 
     // END FIRE EFFECT
-
 /*-------------------------------------------------------------------------------------------------------*/
     // PRELOAD METHOD
 
@@ -211,7 +212,17 @@ function processingCode(p) {
                 p.fill(255);
                 p.textSize('1em');
                 p.textAlign(p.CENTER);
+                // textFilter(displayText);
                 p.text(displayText,0,0,p.windowWidth-50,p.windowHeight - 100);
+    }
+
+    function textFilter(txt) {
+      txt = txt.replace('@','');
+      // var words = [];
+      // var r = 
+      return txt.split('.').join('.\n').split(',').join(',\n');
+      // txt = words.join('\n');
+      // return txt;
     }
     
 /*-------------------------------------------------------------------------------------------------------*/
