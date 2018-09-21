@@ -58,10 +58,15 @@ function processingCode(p) {
     // grammar.pushRules("hero", [hero]);
     populateGrammar(); // function to populate the grammar with words from the RitaJS lexicon
     // var traceryText = new RiString('');
-    var traceryText = (grammar.flatten("#start#"));
+    // traceryText.text(grammar.flatten("#start#"));
+    // var foo = new RiString('This @is a test');
+    // var test = resultsText(foo);
+    // var displayText = traceryText.text();
+    var traceryText = grammar.flatten("#start#");
     var displayText = traceryText;
     displayText = textFilter(displayText);
     var wholeStory = "";
+    var fontSize = 32;
     var bg = "#676969"; // background color
     var scene = "titleScreen"; // sets the initial state to the title screen
     var input; // used to store user text input
@@ -123,7 +128,7 @@ function processingCode(p) {
       var canvas = p.createCanvas(p.windowWidth, p.windowHeight);
       canvas.parent("game");
       // p.textFont(gameFont);
-      p.textSize(24);
+      p.textSize(fontSize);
       p.textAlign(p.CENTER);
       p.smooth();
       p.colorMode(p.RGB);
@@ -137,8 +142,9 @@ function processingCode(p) {
       // generate fire colors palette
       initializePalette();
     
-      buffer.noStroke();
-
+      buffer.noStroke();    
+      // var results = p.createP(textFilter(test.text()));
+      // results.parent('results');
     }
 
 /*-------------------------------------------------------------------------------------------------------*/
@@ -204,6 +210,7 @@ function processingCode(p) {
                 // Display the buffer as a background
                 p.push();
                   //p.image(buffer, 0, 0);
+                  p.translate(0, p.windowHeight / 4);
                   p.scale(1, yScale);
                   drawImageToBottomOrFit(buffer, 1);
                 p.pop();
@@ -212,17 +219,27 @@ function processingCode(p) {
                 p.fill(255);
                 p.textSize('1em');
                 p.textAlign(p.CENTER);
-                // textFilter(displayText);
-                p.text(displayText,0,0,p.windowWidth-50,p.windowHeight - 100);
+                p.text(displayText,0,p.windowHeight / 6,p.windowWidth-50,p.windowHeight - 100);
+    }
+
+
+    // CUSTOM TEXT FUNCTIONS
+    
+    // To be used with Rita JS to change the text color of specific words in an HTML Paragraph
+    function resultsText(txt) {
+      var words = txt.words();
+      for (i = 0; i < words.length; i++) {
+        if (words[i].startsWith('@')) {
+          txt.replaceWord(i+1, words[i+1].fontcolor('white'));
+        }
+      }
+      console.log(words);
+      return txt;
     }
 
     function textFilter(txt) {
       txt = txt.replace('@','');
-      // var words = [];
-      // var r = 
-      return txt.split('.').join('.\n').split(',').join(',\n');
-      // txt = words.join('\n');
-      // return txt;
+      return txt.split('.').join('.\n\n').split(',').join(',\n\n');
     }
     
 /*-------------------------------------------------------------------------------------------------------*/
@@ -483,24 +500,28 @@ function processingCode(p) {
           continueButton.hide();
           userInput();
           displayText = grammar.flatten("#sceneOne#");
+          displayText = textFilter(displayText);
           scene = "questionOne";
           break;
 
         case "sceneTwo":
           displayText = grammar.flatten("#sceneThree#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "sceneThree";
           break;
         
         case "sceneThree":
           displayText = grammar.flatten("#sceneFour#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "sceneFour";
           break;
 
         case "sceneFour":
           displayText = grammar.flatten("#sceneFive#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "sceneFive";
           break;
 
@@ -509,45 +530,52 @@ function processingCode(p) {
           input.show();
           displayText = grammar.flatten("#questionFour#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "questionFour";
           break;
 
         case "sceneSix":
           displayText = grammar.flatten("#sceneSeven#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "sceneSeven";
           break;
 
         case "sceneSeven":
           displayText = grammar.flatten("#sceneEight#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "sceneEight";
           break;
 
         case "sceneEight":
           displayText = grammar.flatten("#sceneNine#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "sceneNine";
           break;
 
         case "sceneNine":
           displayText = grammar.flatten("#sceneTen#");
           wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "sceneTen";
           break;
 
         case "sceneTen":
           displayText = grammar.flatten("#endingOne#");
           wholeStory += displayText + "\n" + "\n";
-          scene = "endingOne";
           displayText += "\n" + "\n" + "Run";
+          displayText = textFilter(displayText);
+          scene = "endingOne";
           break;
 
         case "endingOne":
           displayText = grammar.flatten("#endingTwo#");
           wholeStory += displayText + "\n" + "\n";
-          scene = "endingTwo";
           displayText += "\n" + "\n" + "GET OUT NOW";
+          displayText = textFilter(displayText);
+          scene = "endingTwo";
           break;
 
         case "endingTwo":
@@ -555,6 +583,7 @@ function processingCode(p) {
           input.show();
           displayText = grammar.flatten("#endingQuestion#");
           // wholeStory += displayText + "\n" + "\n";
+          displayText = textFilter(displayText);
           scene = "endingQuestion";
           break;
 
@@ -562,6 +591,7 @@ function processingCode(p) {
           continueButton.hide();
           saveStoryButton();
           displayText = grammar.flatten("#endingFour#");
+          displayText = textFilter(displayText);
           // wholeStory += displayText + "\n" + "\n";
           // scene = "endingFour";
           break;
@@ -609,6 +639,7 @@ function processingCode(p) {
           input.value('');
           displayText = grammar.flatten("#question1#");
           // wholeStory = wholeStory + "\n" + val;
+          displayText = textFilter(displayText);
           scene = "questionTwo";
           break;
 
@@ -619,6 +650,7 @@ function processingCode(p) {
           input.value('');
           displayText = grammar.flatten("#question2#");
           // wholeStory = wholeStory + "\n" + val;
+          displayText = textFilter(displayText);
           scene = "questionThree";
           break;
 
@@ -632,6 +664,7 @@ function processingCode(p) {
           wholeStory += displayText + "\n" + "\n";
           input.hide();
           continueButton.show();
+          displayText = textFilter(displayText);
           scene = "sceneTwo";
           break;
 
@@ -644,6 +677,7 @@ function processingCode(p) {
           wholeStory += displayText + "\n" + "\n";
           input.hide();
           continueButton.show();
+          displayText = textFilter(displayText);
           scene = "sceneSix";
           break;
 
@@ -656,6 +690,7 @@ function processingCode(p) {
           wholeStory += displayText + "\n" + "\n";
           input.hide();
           continueButton.show();
+          displayText = textFilter(displayText);
           scene = "endingThree";
           break;
 
@@ -668,6 +703,7 @@ function processingCode(p) {
           displayText = grammar.flatten("#transition#");
           wholeStory = wholeStory + "\n" + val;
           // touchToContinue();
+          displayText = textFilter(displayText);
           scene = 6;
           break;
 
@@ -680,11 +716,12 @@ function processingCode(p) {
 
     function touchToContinue () {
       continueButton = p.createButton("Continue");
-      continueButton.size(p.windowWidth - 32);
+      continueButton.size(p.windowWidth - 50);
       continueButton.style("position", "absolute");
       continueButton.style("bottom", "16px");
-      continueButton.style("left", "16px");
-      continueButton.style("background-color", "transparent");
+      continueButton.style("left", "22px");
+      // continueButton.style("right", "16px");
+      continueButton.style("background-color", "black");
       continueButton.style("color", "white");
       continueButton.style("border-color", "white");
       continueButton.style("font-size", "2em");
@@ -694,7 +731,8 @@ function processingCode(p) {
 
     function touchToRestart () {
       restartButton = p.createButton("Restart?");
-      restartButton.size(p.windowWidth - 32);
+      //restartButton.parent("game");
+      restartButton.size(p.windowWidth - 50);
       restartButton.style("position", "absolute");
       restartButton.style("top", "16px");
       restartButton.style("left", "16px");
@@ -777,10 +815,10 @@ function processingCode(p) {
     function userInput () {
       input = p.createInput();
       // input.position(50, p.height - 100);
-      input.size(p.windowWidth - 32);
+      input.size(p.windowWidth - 50);
       input.style("position", "absolute");
       input.style("bottom", "16px");
-      input.style("left", "16px");
+      input.style("left", "24px");
       // input.style("right", "16px");
       input.style("background-color", "#000000");
       input.style("color", "white");
@@ -829,6 +867,8 @@ function processingCode(p) {
       p.textAlign(p.CENTER);
       p.text(wholeStory,0,0,p.windowWidth-50,(p.windowHeight * stretch) - 100);
       p.saveCanvas("myCampfireStory", "png");
+      // var results = p.createP(wholeStory);
+      // results.parent('results');
       touchToRestart();
       feedbackAlert();
     }
@@ -841,7 +881,9 @@ function processingCode(p) {
     function feedbackAlert () {
       var answer = confirm ("I hope you've enjoyed playing Campfire Tales! I'd love your feedback to make the game better. Please click OK to fill out the form or cancel to play again")
       if (answer) {
-        window.location= "https://goo.gl/forms/UBHGG3LGSrdL6YLh2";
+        //window.location= "https://goo.gl/forms/UBHGG3LGSrdL6YLh2";
+        var win = window.open("https://goo.gl/forms/UBHGG3LGSrdL6YLh2", '_blank');
+        win.focus();
       }
       // else {
       //   location.reload();
