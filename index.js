@@ -463,6 +463,7 @@ function processingCode(p) {
       // sceneManager();
       if (scene === "titleScreen") {
         scene = "intro";
+        touchToContinue();
         backgroundAudio("pause");
       }
     }
@@ -470,6 +471,7 @@ function processingCode(p) {
     p.touchEnded = function () {
       if (scene === "titleScreen") {
         scene = "intro";
+        touchToContinue();
         backgroundAudio("pause");
       }
     }
@@ -481,8 +483,9 @@ function processingCode(p) {
     function introCheck () {
       if (yScale <= 1) {
         displayText = grammar.flatten("#opening#");
-        touchToContinue();
+        // touchToContinue();
         backgroundAudio("play");
+        displayText = textFilter(displayText);
         scene = "sceneOne";
       }
     }
