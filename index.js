@@ -884,9 +884,9 @@ function processingCode(p) {
     function feedbackAlert () {
       var answer = confirm ("I hope you've enjoyed playing Campfire Tales! I'd love your feedback to make the game better. Please click OK to fill out the form or cancel to play again")
       if (answer) {
-        //window.location= "https://goo.gl/forms/UBHGG3LGSrdL6YLh2";
-        var win = window.open("https://goo.gl/forms/UBHGG3LGSrdL6YLh2", '_blank');
-        win.focus();
+        window.location= "https://goo.gl/forms/UBHGG3LGSrdL6YLh2";
+        // var win = window.open("https://goo.gl/forms/UBHGG3LGSrdL6YLh2", '_blank');
+        // win.focus();
       }
       // else {
       //   location.reload();
