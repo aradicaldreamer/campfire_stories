@@ -499,6 +499,16 @@ function processingCode(p) {
           // touchToContinue();
           break;
         
+
+        case "intro":
+          displayText = grammar.flatten("#opening#");
+          // touchToContinue();
+          backgroundAudio("play");
+          displayText = textFilter(displayText);
+          scene = "sceneOne";
+          break;
+        
+
         case "sceneOne":
           continueButton.hide();
           userInput();
@@ -882,7 +892,7 @@ function processingCode(p) {
 
     // This function is used to collect user feedback
     function feedbackAlert () {
-      var answer = confirm ("I hope you've enjoyed playing Campfire Tales! I'd love your feedback to make the game better. Please click OK to fill out the form or cancel to play again")
+      var answer = confirm ("I hope you've enjoyed playing Campfire Tales! I'd love your feedback to make future versions of the game better. Please click OK to fill out the form or cancel to see your whole story")
       if (answer) {
         //window.location= "https://goo.gl/forms/UBHGG3LGSrdL6YLh2";
         var win = window.open("https://goo.gl/forms/UBHGG3LGSrdL6YLh2", '_blank');
